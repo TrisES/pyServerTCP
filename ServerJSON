@@ -2,6 +2,11 @@ import random
 from socket import *
 import threading
 import json
+"""
+Serveren lytter på port 12000 og venter på en forbindelse.
+Når en klient forbinder, så starter den en ny tråd, som håndterer kommunikationen med klienten.
+Klienten sender en JSON-besked til serveren, som så svarer med en JSON-besked alt efter hvilken metode der er angivet i beskeden.
+"""
 
 # Methods
 def split_message(message):
@@ -12,16 +17,19 @@ def handle_client(connectionSocket, addr):
     keep_communicating = True
 
     while keep_communicating:
+        # Receive a message from the client
         sentence = connectionSocket.recv(1024).decode().strip()
         print(f"Client{addr} said: " + sentence)
         response = "Didn't understand, please send a proper message"
 
         try:
+            # Parse the message as JSON
             data = json.loads(sentence)
             method = data["method"]
             value1 = int(data["value1"])
             value2 = int(data["value2"])
 
+            # Handle the message based on the method
             match method:
                 case "Random":
                     if (value1 > value2):
@@ -41,11 +49,14 @@ def handle_client(connectionSocket, addr):
         except:
             pass # Do nothing, response is already set to the default value
 
-        connectionSocket.send(json.dumps(response).encode()) # Send the response to the client. Json.dumps converts the response to a string, and .encode() converts the string to bytes.
-    connectionSocket.close() # Close the connection (after the loop)
+        # Send the response to the client
+        connectionSocket.send(json.dumps(response).encode())
+
+    # Close the connection (after the loop)
+    connectionSocket.close()
 
 
-# "Main"
+# "Main" (Waits for incoming connections and handles them in a new thread)
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('', serverPort))

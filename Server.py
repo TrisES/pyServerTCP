@@ -1,6 +1,11 @@
 import random
 from socket import *
 import threading
+"""
+Serveren lytter på port 12000 og venter på en forbindelse.
+Når en klient forbinder, så starter den en ny tråd, som håndterer kommunikationen med klienten.
+Klienten sender en besked til serveren, som så svarer alt efter hvilken metode der er angivet i beskeden.
+"""
 
 # Methods
 def split_message(message):
@@ -11,10 +16,12 @@ def handle_client(connectionSocket, addr):
     keep_communicating = True
 
     while keep_communicating:
+        # Receive a message from the client
         sentence = connectionSocket.recv(1024).decode().strip()
         print(f"Client{addr} said: " + sentence)
         response = "Didn't understand, please send a proper message"
 
+        # Parse the message
         method, value1, value2 = "", 0, 0
         argList = split_message(sentence)
         if (len(argList) == 3):
@@ -22,6 +29,7 @@ def handle_client(connectionSocket, addr):
             value2 = int(argList[2])
         method = argList[0]
 
+        # Handle the message based on the method
         match method:
             case "Random":
                 if (value1 > value2):
@@ -39,11 +47,13 @@ def handle_client(connectionSocket, addr):
                 keep_communicating = False
                 response = "closing the connection"
 
+        # Send the response to the client
         connectionSocket.send(response.encode())
-    connectionSocket.close() # Close the connection (after the loop)
 
+    # Close the connection (after the loop)
+    connectionSocket.close()
 
-# "Main"
+# "Main" (Waits for incoming connections and handles them in a new thread)
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_STREAM) 
 serverSocket.bind(('', serverPort)) # 
