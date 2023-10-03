@@ -14,7 +14,6 @@ Klienten sender en besked til serveren, som så svarer alt efter hvilken metode 
 Forbinder til en server på IP-adressen 127.0.0.1 på port 12000 og sender en besked til serveren.
 Beskeden konstrueres ud fra brugerinput og inkluderer et metodenavn og to værdier.
 Serveren svarer med en ændret besked, som klienten så udskriver til konsollen.
-Til sidst sender klienten en 'Close' besked til serveren og lukker forbindelsen.
 
 ### JSON variant
 Der er også en variant af TCP Server og Klient, som sender JSON formaterede strings i stedet for nøgne/ikke-formaterede strings.
